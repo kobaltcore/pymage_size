@@ -15,7 +15,7 @@ def get_image_size(file):
     raise Exception("Unknown Image Format")
 
 
-class ImageFormat():
+class ImageFormat(object):
 
     def __init__(self, file, size, data):
         self.file = file
@@ -39,12 +39,13 @@ class ImageFormat():
     def __repr__(self):
         if self.dimensions == (None, None):
             return "{}(not evaluated)".format(self.__class__.__name__, *self.dimensions)
-        return "{}(x={}, y={}, file={}, buffer={})".format(self.__class__.__name__, *self.dimensions,
-                                                           self.file.name, len(self.data))
+        return "{}(x={}, y={}, file={}, buffer={})".format(self.__class__.__name__, self.dimensions[0],
+                                                           self.dimensions[1], self.file.name, len(self.data))
 
 
 class WebPFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 24 and data.startswith(b"RIFF") and data[8:12] == b"WEBP"
 
@@ -65,6 +66,7 @@ class WebPFormat(ImageFormat):
 
 class FlifFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 16 and data.startswith(b"FLIF")
 
@@ -100,6 +102,7 @@ class FlifFormat(ImageFormat):
 
 class PngFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 24 and data[1:4] == b"PNG" and data[12:16] == b"IHDR"
 
@@ -111,6 +114,7 @@ class PngFormat(ImageFormat):
 
 class GifFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 10 and data[:6] in (b"GIF87a", b"GIF89a")
 
@@ -122,6 +126,7 @@ class GifFormat(ImageFormat):
 
 class JpgFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 2 and data.startswith(b"\377\330")
 
@@ -147,6 +152,7 @@ class JpgFormat(ImageFormat):
 
 class BmpFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 26 and data[0:2] == b"BM"
 
@@ -163,6 +169,7 @@ class BmpFormat(ImageFormat):
 
 class TiffFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         return size >= 8 and data[:4] in (b"II\052\000", b"MM\000\052")
 
@@ -218,6 +225,7 @@ class TiffFormat(ImageFormat):
 
 class IcoFormat(ImageFormat):
 
+    @staticmethod
     def detect(file, size, data):
         reserved = struct.unpack("<H", data[:2])[0]
         ico_type = struct.unpack("<H", data[2:4])[0]  # 1 is for "icon", 2 is for "cursor"

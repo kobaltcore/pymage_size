@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pymage_size',
-    version='1.0.0',
+    version='1.1.0',
     description='A package for getting the dimensions of an image without loading it into memory. No external dependencies.',
     long_description='''
         pymage_size is a small package that enables one to retrieve the dimensions of a number of different image formats
@@ -11,7 +11,8 @@ setup(name='pymage_size',
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Topic :: Multimedia :: Graphics',
         ],
     keywords='image metadata size dimensions',
