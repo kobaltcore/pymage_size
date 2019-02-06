@@ -61,6 +61,8 @@ class WebPFormat(ImageFormat):
             if sc_a != 0x9d or sc_b != 0x01 or sc_c != 0x2a:
                 raise Exception("Missing start code block for lossy WebP image")
             width, height = struct.unpack("<HH", file.read(4))
+        elif data[12:16] == b"VP8X":
+            raise Exception("Extended WebP is currently not supported")
         self.dimensions = (int(width), int(height))
 
 
