@@ -51,6 +51,7 @@ class WebPFormat(ImageFormat):
 
     def parse(self):
         data = self.data
+        file = self.file
         byte_count = struct.unpack("<I", data[16:20])
         if self.data[12:16] == b"VP8L":
             a, b, c, d = struct.unpack("4B", data[21:25])
@@ -62,7 +63,8 @@ class WebPFormat(ImageFormat):
                 raise Exception("Missing start code block for lossy WebP image")
             width, height = struct.unpack("<HH", file.read(4))
         elif data[12:16] == b"VP8X":
-            raise Exception("Extended WebP is currently not supported")
+            width, height = struct.unpack("<HxH", data[24:] + file.read(3))
+            width, height = width + 1, height + 1
         self.dimensions = (int(width), int(height))
 
 
