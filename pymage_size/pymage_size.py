@@ -4,8 +4,11 @@ from abc import abstractmethod
 
 
 def get_image_size(file):
-    size = os.path.getsize(file)
-    file = open(file, "rb")
+    if isinstance(file, str):
+        file = open(file, "rb")
+    file.seek(0, 2)
+    size = file.tell()
+    file.seek(0)
     data = file.read(26)
 
     for format_class in ImageFormat.__subclasses__():
