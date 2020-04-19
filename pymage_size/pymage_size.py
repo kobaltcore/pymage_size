@@ -1,4 +1,3 @@
-import os
 import struct
 from abc import abstractmethod
 
@@ -55,7 +54,7 @@ class WebPFormat(ImageFormat):
     def parse(self):
         data = self.data
         file = self.file
-        byte_count = struct.unpack("<I", data[16:20])
+        byte_count = struct.unpack("<I", data[16:20])  # noqa: F841
         if self.data[12:16] == b"VP8L":
             a, b, c, d = struct.unpack("4B", data[21:25])
             width = 1 + (((b & 0b111) << 8) | a)
@@ -99,9 +98,9 @@ class FlifFormat(ImageFormat):
     def parse(self):
         data = self.data
         meta = struct.unpack("1B", data[4:5])[0]
-        channels = meta >> 4
-        img_format = meta & 0x0F
-        bytes_per_channel = struct.unpack("1B", data[5:6])[0]
+        channels = meta >> 4  # noqa: F841
+        img_format = meta & 0x0F  # noqa: F841
+        bytes_per_channel = struct.unpack("1B", data[5:6])[0]  # noqa: F841
         width, size = self.read_varint(data[6:])
         height, size = self.read_varint(data[6 + size:])
         self.dimensions = (int(width + 1), int(height + 1))

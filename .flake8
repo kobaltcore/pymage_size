@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 120
+ignore =
+    # Star imports
+    F403,
+    F405,
+    # Lambdas
+    E731,
+    # Too many comment signs
+    E266,
