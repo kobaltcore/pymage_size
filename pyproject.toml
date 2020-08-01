@@ -9,7 +9,7 @@ repository = "https://github.com/kobaltcore/pymage_size"
 homepage = "https://github.com/kobaltcore/pymage_size"
 
 [tool.poetry.dependencies]
-python = "~2.7 || ^3.5"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
