@@ -11,7 +11,7 @@ commands:
       - run:
           name: "Lint library and tests"
           command: |
-            poetry run flake8 pymage_size tests
+            poetry run flake8 pymage_size
       # - run:
       #     name: "Run unit tests and coverage"
       #     command: |

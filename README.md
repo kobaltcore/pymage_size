@@ -1,4 +1,7 @@
 # pymage_size
+[![CircleCI](https://circleci.com/gh/kobaltcore/pymage_size.svg?style=svg)](https://circleci.com/gh/kobaltcore/pymage_size)
+[![Downloads](https://pepy.tech/badge/pymage_size)](https://pepy.tech/project/pymage_size)
+
 A Python package for getting the dimensions of an image without loading it into memory. No external dependencies either!
 
 ## Disclaimer
