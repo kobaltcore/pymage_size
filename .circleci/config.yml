@@ -12,11 +12,6 @@ commands:
           name: "Lint library and tests"
           command: |
             poetry run flake8 pymage_size
-      # - run:
-      #     name: "Run unit tests and coverage"
-      #     command: |
-      #       poetry run coverage run --branch --source pymage_size -m pytest
-      #       poetry run codecov -t "${CODECOV_TOKEN}"
 
 jobs:
   test-38:
