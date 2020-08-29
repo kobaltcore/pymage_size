@@ -10,3 +10,5 @@ ignore =
     E266,
     # Line too long
     E501,
+    # Space before colon
+    E203,
