@@ -18,7 +18,6 @@ def get_image_size(file):
 
 
 class ImageFormat(object):
-
     def __init__(self, file, size, data):
         self.file = file
         self.size = size
@@ -41,12 +40,12 @@ class ImageFormat(object):
     def __repr__(self):
         if self.dimensions == (None, None):
             return "{}(not evaluated)".format(self.__class__.__name__, *self.dimensions)
-        return "{}(x={}, y={}, file={}, buffer={})".format(self.__class__.__name__, self.dimensions[0],
-                                                           self.dimensions[1], self.file.name, len(self.data))
+        return "{}(x={}, y={}, file={}, buffer={})".format(
+            self.__class__.__name__, self.dimensions[0], self.dimensions[1], self.file.name, len(self.data)
+        )
 
 
 class WebPFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 24 and data.startswith(b"RIFF") and data[8:12] == b"WEBP"
@@ -61,7 +60,7 @@ class WebPFormat(ImageFormat):
             height = 1 + (((d & 0b1) << 10) | (c << 2) | ((b & 0b11000000) >> 6))
         elif data[12:16] == b"VP8 ":
             sc_a, sc_b, sc_c = struct.unpack("3B", data[23:26])
-            if sc_a != 0x9d or sc_b != 0x01 or sc_c != 0x2a:
+            if sc_a != 0x9D or sc_b != 0x01 or sc_c != 0x2A:
                 raise Exception("Missing start code block for lossy WebP image")
             width, height = struct.unpack("<HH", file.read(4))
         elif data[12:16] == b"VP8X":
@@ -71,7 +70,6 @@ class WebPFormat(ImageFormat):
 
 
 class FlifFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 16 and data.startswith(b"FLIF")
@@ -102,12 +100,11 @@ class FlifFormat(ImageFormat):
         img_format = meta & 0x0F  # noqa: F841
         bytes_per_channel = struct.unpack("1B", data[5:6])[0]  # noqa: F841
         width, size = self.read_varint(data[6:])
-        height, size = self.read_varint(data[6 + size:])
+        height, size = self.read_varint(data[6 + size :])
         self.dimensions = (int(width + 1), int(height + 1))
 
 
 class PngFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 24 and data[1:4] == b"PNG" and data[12:16] == b"IHDR"
@@ -119,7 +116,6 @@ class PngFormat(ImageFormat):
 
 
 class GifFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 10 and data[:6] in (b"GIF87a", b"GIF89a")
@@ -131,7 +127,6 @@ class GifFormat(ImageFormat):
 
 
 class JpgFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 2 and data.startswith(b"\377\330")
@@ -141,12 +136,12 @@ class JpgFormat(ImageFormat):
         file.seek(0)
         file.read(2)
         b = file.read(1)
-        while (b and ord(b) != 0xDA):
-            while (ord(b) != 0xFF):
+        while b and ord(b) != 0xDA:
+            while ord(b) != 0xFF:
                 b = file.read(1)
-            while (ord(b) == 0xFF):
+            while ord(b) == 0xFF:
                 b = file.read(1)
-            if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
+            if ord(b) >= 0xC0 and ord(b) <= 0xC3:
                 file.read(3)
                 height, width = struct.unpack(">HH", file.read(4))
                 break
@@ -157,7 +152,6 @@ class JpgFormat(ImageFormat):
 
 
 class BmpFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 26 and data[0:2] == b"BM"
@@ -174,7 +168,6 @@ class BmpFormat(ImageFormat):
 
 
 class TiffFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         return size >= 8 and data[:4] in (b"II\052\000", b"MM\000\052")
@@ -196,7 +189,7 @@ class TiffFormat(ImageFormat):
             9: (4, boChar + "l"),
             10: (8, boChar + "ll"),
             11: (4, boChar + "f"),
-            12: (8, boChar + "d")
+            12: (8, boChar + "d"),
         }
         ifdOffset = struct.unpack(boChar + "L", data[4:8])[0]
         countSize = 2
@@ -230,7 +223,6 @@ class TiffFormat(ImageFormat):
 
 
 class IcoFormat(ImageFormat):
-
     @staticmethod
     def detect(file, size, data):
         reserved = struct.unpack("<H", data[:2])[0]
