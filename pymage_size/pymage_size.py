@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import struct
 from abc import abstractmethod
 
@@ -41,7 +42,11 @@ class ImageFormat(object):
         if self.dimensions == (None, None):
             return "{}(not evaluated)".format(self.__class__.__name__, *self.dimensions)
         return "{}(x={}, y={}, file={}, buffer={})".format(
-            self.__class__.__name__, self.dimensions[0], self.dimensions[1], self.file.name, len(self.data)
+            self.__class__.__name__,
+            self.dimensions[0],
+            self.dimensions[1],
+            self.file.name,
+            len(self.data),
         )
 
 
@@ -226,7 +231,9 @@ class IcoFormat(ImageFormat):
     @staticmethod
     def detect(file, size, data):
         reserved = struct.unpack("<H", data[:2])[0]
-        ico_type = struct.unpack("<H", data[2:4])[0]  # 1 is for "icon", 2 is for "cursor"
+        ico_type = struct.unpack("<H", data[2:4])[
+            0
+        ]  # 1 is for "icon", 2 is for "cursor"
         return size >= 2 and reserved == 0 and ico_type == 1
 
     def parse(self):
