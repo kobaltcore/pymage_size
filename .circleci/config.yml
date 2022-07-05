@@ -14,28 +14,22 @@ commands:
             poetry run flake8 pymage_size
 
 jobs:
+  test-310:
+    docker:
+      - image: circleci/python:3.10
+    steps:
+      - checkout
+      - build-and-test
   test-39:
     docker:
       - image: circleci/python:3.9
     steps:
       - checkout
       - build-and-test
-  test-38:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout
-      - build-and-test
-  test-37:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - checkout
-      - build-and-test
 
   deploy:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.10
     steps:
       - checkout
       - run:
@@ -48,25 +42,18 @@ workflows:
 
     test-workflow:
       jobs:
+        - test-310
         - test-39
-        - test-38
-        - test-37
 
     deploy-workflow:
       jobs:
+        - test-310:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
         - test-39:
-            filters:
-              tags:
-                only: /v[0-9]+(\.[0-9]+)*/
-              branches:
-                ignore: /.*/
-        - test-38:
-            filters:
-              tags:
-                only: /v[0-9]+(\.[0-9]+)*/
-              branches:
-                ignore: /.*/
-        - test-37:
             filters:
               tags:
                 only: /v[0-9]+(\.[0-9]+)*/
@@ -74,9 +61,8 @@ workflows:
                 ignore: /.*/
         - deploy:
             requires:
+              - test-310
               - test-39
-              - test-38
-              - test-37
             filters:
               tags:
                 only: /v[0-9]+(\.[0-9]+)*/
