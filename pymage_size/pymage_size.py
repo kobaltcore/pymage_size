@@ -61,8 +61,8 @@ class WebPFormat(ImageFormat):
         byte_count = struct.unpack("<I", data[16:20])  # noqa: F841
         if self.data[12:16] == b"VP8L":
             a, b, c, d = struct.unpack("4B", data[21:25])
-            width = 1 + (((b & 0b111) << 8) | a)
-            height = 1 + (((d & 0b1) << 10) | (c << 2) | ((b & 0b11000000) >> 6))
+            width = 1 + (((b & 0b111111) << 8) | a)
+            height = 1 + (((d & 0b1111) << 10) | (c << 2) | ((b & 0b11000000) >> 6))
         elif data[12:16] == b"VP8 ":
             sc_a, sc_b, sc_c = struct.unpack("3B", data[23:26])
             if sc_a != 0x9D or sc_b != 0x01 or sc_c != 0x2A:
