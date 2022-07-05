@@ -1,0 +1,31 @@
+name: Build
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: python:3.10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install project
+        run: |
+          pip install poetry
+          poetry install
+      - name: Run pre-commit
+        run: |
+          poetry run pre-commit -a
+
+  upload-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [lint]
+    runs-on: python:3.10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install project
+        run: |
+          pip install poetry
+          poetry install
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.11
+        with:
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
