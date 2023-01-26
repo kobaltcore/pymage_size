@@ -9,7 +9,7 @@ def get_image_size(file):
     file.seek(0, 2)
     size = file.tell()
     file.seek(0)
-    data = file.read(26)
+    data = file.read(512)
 
     for format_class in ImageFormat.__subclasses__():
         if format_class.detect(file, size, data):
@@ -240,4 +240,18 @@ class IcoFormat(ImageFormat):
         # read the dimensions of the first image
         width = ord(str(data[6]))
         height = ord(str(data[7]))
+        self.dimensions = (int(width), int(height))
+
+
+class AVIFFormat(ImageFormat):
+    @staticmethod
+    def detect(file: str, size: int, data: bytes) -> bool:
+        return data[0:3] == b"\x00\x00\x00" and data[4:12] == b"ftypavif"
+
+    def parse(self):
+        data = self.data
+        ispe_index = data.index(b"\x00\x00\x00\x14ispe")
+        data = data[ispe_index : ispe_index + 20]
+        width = struct.unpack(">I", data[12:16])[0]
+        height = struct.unpack(">I", data[16:20])[0]
         self.dimensions = (int(width), int(height))
