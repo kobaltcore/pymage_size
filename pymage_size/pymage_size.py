@@ -1,5 +1,6 @@
 import struct
 from abc import abstractmethod
+from typing import cast
 
 
 def get_image_size(file):
@@ -18,23 +19,24 @@ def get_image_size(file):
 
 
 class ImageFormat:
-    def __init__(self, file, size, data):
+    def __init__(self, file: str, size: int, data: bytes):
         self.file = file
         self.size = size
         self.data = data
-        self.dimensions = (None, None)
+        self.dimensions: tuple[int | None, int | None] = (None, None)
 
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return NotImplemented
 
     @abstractmethod
     def parse(self):
         return NotImplemented
 
-    def get_dimensions(self):
+    def get_dimensions(self) -> tuple[int, int]:
         if self.dimensions == (None, None):
             self.parse()
+        self.dimensions = cast(tuple[int, int], self.dimensions)
         return self.dimensions
 
     def __repr__(self):
@@ -51,7 +53,7 @@ class ImageFormat:
 
 class WebPFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 24 and data.startswith(b"RIFF") and data[8:12] == b"WEBP"
 
     def parse(self):
@@ -75,10 +77,10 @@ class WebPFormat(ImageFormat):
 
 class FlifFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 16 and data.startswith(b"FLIF")
 
-    def read_varint(self, data):
+    def read_varint(self, data) -> tuple[int, int]:
         VALUE_MASK = 0b01111111
         LEADING_BIT_MASK = 0b10000000
 
@@ -99,10 +101,10 @@ class FlifFormat(ImageFormat):
 
     def parse(self):
         data = self.data
-        meta = struct.unpack("1B", data[4:5])[0]
-        channels = meta >> 4  # noqa: F841
-        img_format = meta & 0x0F  # noqa: F841
-        bytes_per_channel = struct.unpack("1B", data[5:6])[0]  # noqa: F841
+        # meta = struct.unpack("1B", data[4:5])[0]
+        # channels = meta >> 4
+        # img_format = meta & 0x0F
+        # bytes_per_channel = struct.unpack("1B", data[5:6])[0]
         width, size = self.read_varint(data[6:])
         height, size = self.read_varint(data[6 + size :])
         self.dimensions = (int(width + 1), int(height + 1))
@@ -110,7 +112,7 @@ class FlifFormat(ImageFormat):
 
 class PngFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 24 and data[1:4] == b"PNG" and data[12:16] == b"IHDR"
 
     def parse(self):
@@ -121,7 +123,7 @@ class PngFormat(ImageFormat):
 
 class GifFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 10 and data[:6] in (b"GIF87a", b"GIF89a")
 
     def parse(self):
@@ -132,7 +134,7 @@ class GifFormat(ImageFormat):
 
 class JpgFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 2 and data.startswith(b"\377\330")
 
     def parse(self):
@@ -157,7 +159,7 @@ class JpgFormat(ImageFormat):
 
 class BmpFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 26 and data[0:2] == b"BM"
 
     def parse(self):
@@ -173,7 +175,7 @@ class BmpFormat(ImageFormat):
 
 class TiffFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         return size >= 8 and data[:4] in (b"II\052\000", b"MM\000\052")
 
     def parse(self):
@@ -228,7 +230,7 @@ class TiffFormat(ImageFormat):
 
 class IcoFormat(ImageFormat):
     @staticmethod
-    def detect(file, size, data):
+    def detect(file: str, size: int, data: bytes) -> bool:
         reserved = struct.unpack("<H", data[:2])[0]
         ico_type = struct.unpack("<H", data[2:4])[0]  # 1 is for "icon", 2 is for "cursor"
         return size >= 2 and reserved == 0 and ico_type == 1
