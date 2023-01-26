@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pymage_size"
-version = "1.7.0"
+version = "1.7.1"
 description = "A Python package for getting the dimensions of an image without loading it into memory."
 authors = ["cobaltcore <cobaltcore@yandex.com>"]
 license = "MIT"
