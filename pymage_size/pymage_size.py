@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import struct
 from abc import abstractmethod
 
@@ -18,7 +17,7 @@ def get_image_size(file):
     raise Exception("Unknown Image Format")
 
 
-class ImageFormat(object):
+class ImageFormat:
     def __init__(self, file, size, data):
         self.file = file
         self.size = size
@@ -231,9 +230,7 @@ class IcoFormat(ImageFormat):
     @staticmethod
     def detect(file, size, data):
         reserved = struct.unpack("<H", data[:2])[0]
-        ico_type = struct.unpack("<H", data[2:4])[
-            0
-        ]  # 1 is for "icon", 2 is for "cursor"
+        ico_type = struct.unpack("<H", data[2:4])[0]  # 1 is for "icon", 2 is for "cursor"
         return size >= 2 and reserved == 0 and ico_type == 1
 
     def parse(self):
